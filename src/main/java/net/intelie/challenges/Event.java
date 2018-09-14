@@ -3,7 +3,7 @@ package net.intelie.challenges;
 /**
  * This is just an event stub, feel free to expand it if needed.
  */
-public class Event {
+public final class Event {
     private final String type;
     private final long timestamp;
 
