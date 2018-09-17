@@ -15,6 +15,7 @@ import net.intelie.challenges.entity.Event;
 
 public class EventIteratorImpl implements EventIterator {
 
+	//Thread-safe integer
 	private AtomicInteger marker = new AtomicInteger(-1);
 
 	private final List<Event> events;
