@@ -12,8 +12,6 @@ import net.intelie.challenges.util.EventIteratorImpl;
 /**
  * EventStore Implementation
  * 
- * Here we could use java 8 ConcurrentLinkedQueue
- * 
  * @author Bianca Munaro
  *
  */
