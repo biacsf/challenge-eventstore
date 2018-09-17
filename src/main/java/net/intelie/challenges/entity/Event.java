@@ -4,9 +4,7 @@ package net.intelie.challenges.entity;
  * This is just an event stub, feel free to expand it if needed.
  */
 public final class Event {
-	
-	
-	
+
 	private final String type;
 	private final long timestamp;
 
@@ -55,7 +53,5 @@ public final class Event {
 	public String toString() {
 		return "Event [type=" + type + ", timestamp=" + timestamp + "]";
 	}
-	
-	
 
 }
