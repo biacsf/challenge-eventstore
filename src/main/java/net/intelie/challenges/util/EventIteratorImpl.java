@@ -1,7 +1,10 @@
-package net.intelie.challenges;
+package net.intelie.challenges.util;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import net.intelie.challenges.entity.Event;
 
 /**
  * Linked List Implementation
@@ -19,6 +22,11 @@ public class EventIteratorImpl implements EventIterator {
 	public EventIteratorImpl(List<Event> events) {
 		super();
 		this.events = events;
+	}
+	
+	public EventIteratorImpl() {
+		super();
+		this.events = new ArrayList<>();
 	}
 
 	@Override
@@ -50,12 +58,12 @@ public class EventIteratorImpl implements EventIterator {
 	}
 
 	private boolean hasNext() {
-		return events.size() > marker.get();
+		return events.size() != 0 && events.size() > marker.get();
 	}
 	
 	private void validadeCurrentOrRemove() {
 		if(marker.get() == -1) {
-			throw new IllegalStateException("movenext was never called");
+			throw new IllegalStateException("movenext() was never called");
 		}
 		if(!hasNext()) {
 			throw new IllegalStateException("The array has reached its end");
