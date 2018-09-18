@@ -5,6 +5,9 @@ import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;
 
@@ -26,7 +29,7 @@ public class EventStoreThreadTest {
 
 		EventStore store = new EventStoreImpl();
 
-		ExecutorService executor = Executors.newFixedThreadPool(100);
+		ExecutorService executor = Executors.newFixedThreadPool(1000);
 
 		Callable<String> insertEvent1Task = () -> {
 			System.out.println("Executing insertEvent1Task");
@@ -54,13 +57,29 @@ public class EventStoreThreadTest {
 			EventIterator iterator = store.query(SOME_TYPE, 1505487811000L, 1537023811000L);
 
 			while (iterator.moveNext()) {
-				System.out.println("Query: Event in memory: " + iterator.current());
+				System.out.println("Event in memory: " + iterator.current());
 			}
 
 			return "Query events of type: " + SOME_TYPE + " and between timestamps: 1505487811000L and 1537023811000L";
 		};
 
-		List<Callable<String>> tasks = Arrays.asList(queryEventsTask, insertEvent1Task, queryEventsTask);
+		List<Callable<String>> tasks = Arrays.asList(insertEvent1Task, insertEvent2Task, insertEvent1Task,
+				insertEvent1Task, removeAnotherTypeTask, removeAnotherTypeTask, removeSomeTypeTask, insertEvent1Task);
+
+		ScheduledExecutorService executorService = Executors.newScheduledThreadPool(1000);
+
+		executorService.scheduleAtFixedRate(new Runnable() {
+			@Override
+			public void run() {
+					System.out.println("Executing queryEventsTask");
+					EventIterator iterator = store.query(SOME_TYPE, 1505487811000L, 1537023811000L);
+
+					while (iterator.moveNext()) {
+						System.out.println("Event in memory: " + iterator.current());
+					}
+			}
+
+		}, 0, 1, TimeUnit.MILLISECONDS);
 
 		try {
 			executor.invokeAll(tasks).stream().map(future -> {
