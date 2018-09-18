@@ -5,9 +5,6 @@ import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;
 
@@ -57,20 +54,13 @@ public class EventStoreThreadTest {
 			EventIterator iterator = store.query(SOME_TYPE, 1505487811000L, 1537023811000L);
 
 			while (iterator.moveNext()) {
-				System.out.println("Evento em memoria: " + iterator.current());
+				System.out.println("Query: Event in memory: " + iterator.current());
 			}
 
 			return "Query events of type: " + SOME_TYPE + " and between timestamps: 1505487811000L and 1537023811000L";
 		};
 
-		List<Callable<String>> tasks = Arrays.asList(insertEvent1Task, removeSomeTypeTask, queryEventsTask,
-				insertEvent1Task, insertEvent2Task, insertEvent1Task, removeAnotherTypeTask, queryEventsTask,
-				insertEvent1Task, removeAnotherTypeTask, insertEvent2Task, insertEvent2Task, removeSomeTypeTask);
-
-		ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
-
-		Future<String> resultFuture = executorService.schedule(insertEvent1Task, 1, TimeUnit.SECONDS);
-		Future<String> resultFuture2 = executorService.schedule(insertEvent2Task, 1, TimeUnit.SECONDS);
+		List<Callable<String>> tasks = Arrays.asList(queryEventsTask, insertEvent1Task, queryEventsTask);
 
 		try {
 			executor.invokeAll(tasks).stream().map(future -> {
@@ -80,10 +70,7 @@ public class EventStoreThreadTest {
 					throw new IllegalStateException(e);
 				}
 			}).forEach(System.out::println);
-			;
-			executor.submit(insertEvent1Task);
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 

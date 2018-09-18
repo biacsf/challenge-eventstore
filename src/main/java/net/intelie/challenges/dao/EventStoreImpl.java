@@ -39,18 +39,18 @@ public class EventStoreImpl implements EventStore {
 	}
 
 	@Override
-	public void insert(Event event) {
+	public synchronized void insert(Event event) {
 		getInstance().add(event);
 
 	}
 
 	@Override
-	public void removeAll(String type) {
+	public synchronized void removeAll(String type) {
 		getInstance().removeIf((Event event) -> event.type() == type);
 	}
 
 	@Override
-	public EventIterator query(String type, long startTime, long endTime) {
+	public synchronized EventIterator query(String type, long startTime, long endTime) {
 
 		return new EventIteratorImpl(getInstance().parallelStream()
 				.filter((Event event) -> (event.type() == type
